@@ -32,8 +32,13 @@ module BetterErrors
     
     # @private
     alias_method :binding_of_caller_available?, :binding_of_caller_available
+
+    # The ignored instance variables.
+    # @return [Array]
+    attr_accessor :ignored_instance_variables
   end
-  
+  @ignored_instance_variables = []
+
   # Returns a proc, which when called with a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.
   # 
@@ -90,7 +95,9 @@ module BetterErrors
     when :sublime, :subl, :st
       self.editor = "subl://open?url=file://%{file}&line=%{line}"
     when :macvim, :mvim
-      self.editor = "mvim://open?url=file://%{file}&line=%{line}"
+      self.editor = proc { |file, line| "mvim://open?url=file://#{file}&line=#{line}" }
+    when :emacs
+      self.editor = "emacs://open?url=file://%{file}&line=%{line}"
     when String
       self.editor = proc { |file, line| editor % { file: URI.encode_www_form_component(file), line: line } }
     else
@@ -100,6 +107,14 @@ module BetterErrors
         raise TypeError, "Expected editor to be a valid editor key, a format string or a callable."
       end
     end
+  end
+
+  # Enables experimental Pry support in the inline REPL
+  #
+  # If you encounter problems while using Pry, *please* file a bug report at
+  # https://github.com/charliesome/better_errors/issues
+  def self.use_pry!
+    REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
   end
   
   BetterErrors.editor = :textmate
