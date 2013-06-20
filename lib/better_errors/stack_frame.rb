@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   class StackFrame
     def self.from_exception(exception)
-      if exception.__better_errors_bindings_stack.any?
+      if exception.respond_to?('__better_errors_bindings_stack') && exception.__better_errors_bindings_stack.any?
         list = exception.__better_errors_bindings_stack.map { |binding|
           file = binding.eval "__FILE__"
           line = binding.eval "__LINE__"
