@@ -2,8 +2,6 @@
 <html>
 <head>
     <title><%= exception.class %> at <%= request_path %></title>
-</head>
-<body>
     <style>
     /* Basic reset */
     * {
@@ -665,6 +663,8 @@
 
 
     </style>
+</head>
+<body>
     <div class='top'>
         <header class="exception">
             <h2><strong><%= exception.class %></strong> <span>at <%= request_path %></span></h2>
